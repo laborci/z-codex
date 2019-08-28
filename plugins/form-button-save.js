@@ -19,11 +19,11 @@ export default class FormButtonSave extends FormButtonPlugin {
 		};
 		form.showOverlay();
 		Ajax.json('/' + form.urlBase + '/save-item', data).getJson
-		.then(result => {
-			if (result.status !== 200) {
-				form.handlerError(result);
+		.then(xhr => {
+			if (xhr.status !== 200) {
+				form.handlerError(xhr);
 			}else{
-				form.load(parseInt(result.id));
+				form.load(parseInt(xhr.response.id));
 			}
 		})
 		.finally(() => {

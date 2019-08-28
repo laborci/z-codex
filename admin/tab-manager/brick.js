@@ -15,12 +15,8 @@ export default class CodexAdminTabManager extends Brick {
 		this.listen('TAB-CLOSED', event => { this.removeTab(event.source);});
 	}
 
-	onRender() {}
-
 	open(urlBase, id) {
 		let tab = this.$(CodexAdminTab.selector + `[data-id="${id}"][data-type="${urlBase}"]`).node?.controller;
-		console.log(tab)
-
 		if (!tab) {
 			CodexAdminTab.create()
 			.then(newTab=> {
@@ -33,8 +29,6 @@ export default class CodexAdminTabManager extends Brick {
 				return CodexAdminForm.create();
 			})
 			.then((form)=>{
-				console.log(tab)
-				console.log(form)
 				tab.form = form;
 				form.tab = tab;
 				form.load(id, urlBase);

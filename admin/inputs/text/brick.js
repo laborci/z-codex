@@ -6,19 +6,8 @@ import Input from "../input";
 @Brick.register('codex-input-text', twig)
 @Brick.registerSubBricksOnRender()
 
-export default class InputText extends Input{
-
-    getDefaultOptions(){
-        return {
-            rows: 5
-        }
-    }
-
-    getValue(){
-        return this.$$("input").node.value;
-    }
-
-    setValue(value){
-        this.$$("input").node.value = value;
-    }
+export default class InputText extends Input {
+	getDefaultOptions() { return {rows: 5}}
+	getValue() { return this.$$("input").node.value;}
+	setValue(value) {this.$$("input").node.value = value;}
 }

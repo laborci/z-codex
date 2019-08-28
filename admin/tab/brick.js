@@ -4,12 +4,12 @@ import "./style.less";
 
 @Brick.register('codex-admin-tab', twig)
 @Brick.registerSubBricksOnRender()
-@Brick.observeAttributes(['data-label', 'data-icon', 'data-selected'])
+@Brick.observeAttributes(true, ['data-label', 'data-icon', 'data-selected'])
 export default class CodexAdminTab extends Brick {
 
 	onInitialize() {
 		this.$().listen('click', event => {
-			if (this.dataset.selected !== 'yes') this.appEventManager.fire('TAB-SELECTED');
+			if (this.dataset.selected !== 'yes') this.fire('TAB-SELECTED');
 		});
 		this.root.classList.add('closed');
 	}
@@ -22,7 +22,7 @@ export default class CodexAdminTab extends Brick {
 		};
 	}
 
-	onAttributeChange() {this.setup();}
+	onAttributeChange() {this.render();}
 
 	onRender() {
 		this.root.setAttribute('title', this.dataset.label);
@@ -35,7 +35,7 @@ export default class CodexAdminTab extends Brick {
 
 	close() {
 		this.root.classList.add('closed');
-		setTimeout(() => this.appEventManager.fire('TAB-CLOSED'), 300);
+		setTimeout(() => this.fire('TAB-CLOSED'), 300);
 	}
 
 }

@@ -26,16 +26,15 @@ export default class InputCheckboxes extends Input {
 		this.$$('input-element').nodes.forEach(line => this.checkValue(input, line));
 	}
 
-	checkValue(input, line) {
-		if (line.value === input) {
-			line.checked = true;
-		}
-	}
+	checkValue(input, line) {if (line.value === input) line.checked = true; }
 
-	preprocessOptions(options){
-		if(!(options.options instanceof Array)){
+	preprocessOptions(options) {
+		if (!(options.options instanceof Array)) {
 			let opts = [];
-			for(let value in options.options)opts.push({value: value, label: options.options[value]});
+			for (let value in options.options) if (options.options.hasOwnProperty(value)) opts.push({
+				value: value,
+				label: options.options[value]
+			});
 			options.options = opts;
 		}
 		return options;

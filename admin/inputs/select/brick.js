@@ -9,18 +9,12 @@ import Input from "../input";
 
 export default class InputSelect extends Input {
 
-	getValue() {
-		return this.$$("input-element").node.value;
-	}
-
-	setValue(value) {
-		this.$$("input-element").get().value = value;
-	}
-
-	preprocessOptions(options){
-		if(!(options.options instanceof Array)){
+	getValue() { return this.$$("input-element").node.value;}
+	setValue(value) { this.$$("input-element").get().value = value;}
+	preprocessOptions(options) {
+		if (!(options.options instanceof Array)) {
 			let opts = [];
-			for(let value in options.options)opts.push({value: value, label: options.options[value]});
+			for (let value in options.options) opts.push({value: value, label: options.options[value]});
 			options.options = opts;
 		}
 		return options;

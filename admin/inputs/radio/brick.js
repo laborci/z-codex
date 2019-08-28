@@ -6,7 +6,6 @@ import Input from "../input";
 @Brick.register('codex-input-radio', twig)
 @Brick.registerSubBricksOnRender()
 @Brick.renderOnConstruct(false)
-
 export default class InputRadio extends Input {
 
 	getValue() {

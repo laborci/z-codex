@@ -8,13 +8,6 @@ import dateToDateTimeLocal from "phlex-datetime-local";
 @Brick.registerSubBricksOnRender()
 
 export default class InputDate extends Input {
-
-	getValue() {
-		let value = this.$$('input-element').node.value;
-
-	}
-	setValue(value) {
-		this.$$("input-element").node.value = value;
-	}
-
+	getValue() { let value = this.$$('input-element').node.value;}
+	setValue(value) { this.$$("input-element").node.value = value;}
 }

@@ -31,48 +31,54 @@ export default class CodexAdminForm extends Brick {
 		if (id !== null) this.id = id;
 
 		this.showOverlay();
-		Ajax.get('/' + this.urlBase + '/get-form-item/' + (this.id===null ? 'new' : this.id)).getJson
-			.then(result => {
-				if (result.status !== 200) {
-					this.handlerError(result, () => {this.tab.close();});
-				} else {
-					this.label = result.data.fields[result.descriptor.labelField];
-					this.label = this.label ? this.label : 'new';
-					this.icon = result.descriptor.formIcon;
-					this.plugins = result.descriptor.plugins ? result.descriptor.plugins : [];
-					this.tab.dataset.icon = result.descriptor.tabIcon;
-					this.tab.dataset.label = this.label;
-					this.tab.dataset.id = this.id;
-					this.data = result.data;
-					this.sections = result.descriptor.sections;
-					this.setup();
-				}
-			})
-			.finally(() => {
-				this.hideOverlay();
-			})
+		Ajax.get('/' + this.urlBase + '/get-form-item/' + (this.id === null ? 'new' : this.id)).getJson
+		.then(xhr => {
+			if (xhr.status !== 200) {
+				this.handlerError(xhr, () => {this.tab.close();});
+			} else {
+				let result = xhr.response;
+				console.log(this.tab)
+				this.label = result.data.fields[result.descriptor.labelField];
+				this.label = this.label ? this.label : 'new';
+				this.icon = result.descriptor.formIcon;
+				this.plugins = result.descriptor.plugins ? result.descriptor.plugins : [];
+				this.tab.root.dataset.icon = result.descriptor.tabIcon;
+				this.tab.root.dataset.label = this.label;
+				this.tab.root.dataset.id = this.id;
+				this.data = result.data;
+				this.sections = result.descriptor.sections;
+				this.render();
+			}
+		})
+		.finally(() => {
+			this.hideOverlay();
+		})
 		;
 	}
 
 	onRender() {
+		let promises = [];
 		this.sections.forEach(section => section.inputs.forEach(input => {
-			this.$$('input').filter(`[data-name=${input.field}`).node.controller.setOptions(input.options);
+			promises.push(
+				this.$$('input').filter(`[data-name=${input.field}`).node.controller.setOptions(input.options)
+				.then(inputBrick => {
+					if (this.data.fields.hasOwnProperty(input.field)) inputBrick.setValue(this.data.fields[input.field]);
+				})
+			);
 		}));
-
-		for (let field in this.data.fields) {
-			this.$$('input').filter(`[data-name=${field}`).node.controller.value = this.data.fields[field];
-		}
-
-		let plugins = pluginManager.get(this.plugins, FormButtonPlugin, this);
-		plugins.forEach(plugin => {
-			let button = plugin.createButton();
-			if (button) this.$$('buttons').node.appendChild(button);
+		Promise.all(promises)
+		.then(() => {
+			let plugins = pluginManager.get(this.plugins, FormButtonPlugin, this);
+			plugins.forEach(plugin => {
+				let button = plugin.createButton();
+				if (button) this.$$('buttons').node.appendChild(button);
+			});
 		});
 	}
 
-	handlerError(result, cb = null) {
-		let message = `Some unknown error occured: ${result.statusText} (${result.status})`;
-		if (typeof result.json?.message === "string") message = result.json.message;
+	handlerError(xhr, cb = null) {
+		let message = `Some unknown error occured: ${xhr.statusText} (${xhr.status})`;
+		if (typeof xhr.json?.message === "string") message = xhr.json.message;
 		let modal = new Modal();
 		modal.title = "ERROR";
 		modal.body = message;
@@ -87,7 +93,7 @@ export default class CodexAdminForm extends Brick {
 		return data;
 	}
 
-	reloadList() { this.appEventManager.fire('RELOAD-LIST', {urlBase: this.urlBase});}
+	reloadList() { this.fire('RELOAD-LIST', {urlBase: this.urlBase});}
 
 	showOverlay() { this.$$('overlay').node.classList.add('visible');}
 	hideOverlay() { this.$$('overlay').node.classList.remove('visible');}
