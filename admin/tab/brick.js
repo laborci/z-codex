@@ -8,7 +8,7 @@ import "./style.less";
 export default class CodexAdminTab extends Brick {
 
 	onInitialize() {
-		this.listen(null, 'click', event => {
+		this.$().listen('click', event => {
 			if (this.dataset.selected !== 'yes') this.appEventManager.fire('TAB-SELECTED');
 		});
 		this.root.classList.add('closed');

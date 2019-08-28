@@ -3,21 +3,24 @@ import twig  from "./template.twig";
 import "./style.less";
 
 @Brick.register('codex-layout-content', twig)
-export default class CodexLayoutContentBrick extends Brick{
+export default class CodexLayoutContentBrick extends Brick {
 
-	onRender(){
+	onRender() {
 		this.brick = null;
 		this.content = null;
 	}
 
-	show(brick, data){
-		if(this.brick !== brick){
+	show(brick, data) {
+		if (this.brick !== brick) {
 			this.brick = brick;
-			while(this.root.firstChild) this.root.removeChild(this.root.firstChild);
-			this.content = brick.create('div', true).controller;
-			this.root.appendChild(this.content.root);
-		}
-		this.content.route(data);
+			while (this.root.firstChild) this.root.removeChild(this.root.firstChild);
+			brick.create()
+			.then(brick => {
+				this.content = brick;
+				this.root.appendChild(this.content.root);
+				this.content.route(data);
+			})
+		} else this.content.route(data);
 	}
 
 }

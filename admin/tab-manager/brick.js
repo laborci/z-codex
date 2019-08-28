@@ -18,24 +18,30 @@ export default class CodexAdminTabManager extends Brick {
 	onRender() {}
 
 	open(urlBase, id) {
-		let tab = this.find(CodexAdminTab.selector + `[data-id="${id}"][data-type="${urlBase}"]`);
-		if (tab === null) {
-			tab = CodexAdminTab.create('div', true);
-			tab.dataset.id = id;
-			tab.dataset.type = urlBase;
-			tab.dataset.icon = 'fas fa-infinity';
-			tab.dataset.label = '...';
-			this.$$('tabs').node.appendChild(tab);
+		let tab = this.$(CodexAdminTab.selector + `[data-id="${id}"][data-type="${urlBase}"]`).node?.controller;
+		console.log(tab)
 
-			let form = CodexAdminForm.create('div', true);
-
-			tab.controller.form = form.controller;
-			form.controller.tab = tab.controller;
-
-			form.controller.load(id, urlBase);
-			this.$$('forms').node.appendChild(form);
-		}
-		this.selectTab(tab.controller);
+		if (!tab) {
+			CodexAdminTab.create()
+			.then(newTab=> {
+				tab = newTab;
+				tab.root.dataset.id = id;
+				tab.root.dataset.type = urlBase;
+				tab.root.dataset.icon = 'fas fa-infinity';
+				tab.root.dataset.label = '...';
+				this.$$('tabs').node.appendChild(tab.root);
+				return CodexAdminForm.create();
+			})
+			.then((form)=>{
+				console.log(tab)
+				console.log(form)
+				tab.form = form;
+				form.tab = tab;
+				form.load(id, urlBase);
+				this.$$('forms').node.appendChild(form.root);
+				this.selectTab(tab);
+			});
+		}else this.selectTab(tab);
 	}
 
 	selectTab(tab) {

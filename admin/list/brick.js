@@ -37,13 +37,13 @@ export default class CodexAdminList extends Brick {
 	onRender() {
 
 		this.$$('list').listen('click', event => {
-			this.appEventManager.fire('ITEM-SELECTED', {id: event.target.closest('tr').dataset.id});
+			this.fire('ITEM-SELECTED', {id: event.target.closest('tr').dataset.id});
 		});
 
 
 		this.$$('pager-slider').listen('input', event => {
 			let page = event.target.value;
-			this.appEventManager.fire('PAGING-CHANGED', {page: page, pageSize: this.pageSize, count: this.count});
+			this.fire('PAGING-CHANGED', {page: page, pageSize: this.pageSize, count: this.count});
 		});
 
 		this.$$('pager-slider').listen('change', event => this.load(event.target.value));
@@ -94,15 +94,16 @@ export default class CodexAdminList extends Brick {
 		this.showOverlay();
 
 		Ajax.json('/' + this.urlBase + '/get-list/' + page, {sort: this.sort.field ? this.sort : null}).getJson
-		.then(result => {
-			this.page = parseInt(result.page);
-			this.count = result.count;
+		.then(request => {
+			let response = request.response;
+			this.page = parseInt(response.page);
+			this.count = response.count;
 
 			this.fire('PAGING-CHANGED', {page: this.page, pageSize: this.pageSize, count: this.count});
 
-			let pages = Math.ceil(result.count / this.pageSize);
+			let pages = Math.ceil(response.count / this.pageSize);
 			this.$$('pager-slider').node.setAttribute('max', pages);
-			this.$$('pager-slider').node.value = result.page;
+			this.$$('pager-slider').node.value = response.page;
 
 
 			this.$$('step-page-left', stepper => {
@@ -115,7 +116,7 @@ export default class CodexAdminList extends Brick {
 				else stepper.classList.remove('unavailable');
 			});
 
-			this.renderContent(result.rows);
+			this.renderContent(response.rows);
 			this.loading = false;
 		})
 		.finally(() => {
