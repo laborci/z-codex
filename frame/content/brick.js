@@ -6,21 +6,21 @@ import "./style.less";
 export default class CodexLayoutContentBrick extends Brick {
 
 	onRender() {
+		this.typeofBrick = null;
 		this.brick = null;
-		this.content = null;
 	}
 
-	show(brick, data) {
-		if (this.brick !== brick) {
-			this.brick = brick;
-			while (this.root.firstChild) this.root.removeChild(this.root.firstChild);
-			brick.create()
+	show(typeofBrick, data) {
+		if (this.brick !== typeofBrick) {
+			this.typeofBrick = typeofBrick;
+			this.clearContent();
+			typeofBrick.create()
 			.then(brick => {
-				this.content = brick;
-				this.root.appendChild(this.content.root);
-				this.content.route(data);
+				this.brick = brick;
+				this.root.appendChild(this.brick.root);
+				this.brick.route(data);
 			})
-		} else this.content.route(data);
+		} else this.brick.route(data);
 	}
 
 }

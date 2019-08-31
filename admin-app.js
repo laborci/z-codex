@@ -1,7 +1,7 @@
 import Application      from "zengular/core/application";
-import CodexLayoutBrick from "./frame/layout/brick";
 import CodexFormFrame   from "./admin/frame/brick";
 
+import "./frame/layout/brick";
 import "./admin/loader";
 import "./plugins/loader";
 
