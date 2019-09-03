@@ -1,5 +1,5 @@
-import FormButtonPlugin from "../plugin/types/FormButtonPlugin";
-import Modal            from "z-ui/modal/modal";
+import FormButtonPlugin          from "../plugin/types/FormButtonPlugin";
+import CodexAdminAttachmentModal from "../admin/attachment-modal/brick";
 
 @FormButtonPlugin.register()
 export default class FormButtonFiles extends FormButtonPlugin {
@@ -8,12 +8,6 @@ export default class FormButtonFiles extends FormButtonPlugin {
 	get icon() { return 'fa fa-folder';}
 	get color() { return null;}
 	createButton() { return this.form.id ? super.createButton() : false; }
-	action(event){
-		this.modal = new Modal();
-		this.modal.height = 'calc(100vh - 60px)';
-		this.modal.width = 'calc(100vw - 60px)';
-		this.modal.body = "HELLO";
-		this.modal.show();
-	}
+	action(event) { CodexAdminAttachmentModal.createModal().then(modal => modal.show({form: this.form}));}
 
 }

@@ -15,6 +15,7 @@ export default class CodexAdminForm extends Brick {
 		this.plugins = [];
 		this.data = {};
 		this.id = null;
+		this.attachmentCategories = [];
 	}
 
 	createViewModel() {
@@ -41,6 +42,7 @@ export default class CodexAdminForm extends Brick {
 				this.label = result.data.fields[result.descriptor.labelField];
 				this.label = this.label ? this.label : 'new';
 				this.icon = result.descriptor.formIcon;
+				this.attachmentCategories = result.descriptor.attachmentCategories;
 				this.plugins = result.descriptor.plugins ? result.descriptor.plugins : [];
 				this.tab.root.dataset.icon = result.descriptor.tabIcon;
 				this.tab.root.dataset.label = this.label;
