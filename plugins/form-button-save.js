@@ -1,6 +1,7 @@
 import FormButtonPlugin from "../plugin/types/FormButtonPlugin";
 import CodexAdminForm   from "../admin/form/brick";
 import Ajax             from "zengular/core/ajax";
+import AjaxErrorHandler from "../admin/ajax-error-handler";
 
 /**
  * @property {CodexAdminForm} form
@@ -17,17 +18,12 @@ export default class FormButtonSave extends FormButtonPlugin {
 			id: form.id,
 			fields: form.collectFieldData()
 		};
-		form.showOverlay();
+		form.fire('show-overlay');
 		Ajax.json('/' + form.urlBase + '/save-item', data).getJson
-		.then(xhr => {
-			if (xhr.status !== 200) {
-				form.handlerError(xhr);
-			}else{
-				form.load(parseInt(xhr.response.id));
-			}
-		})
+		.then(xhr=>AjaxErrorHandler.handle(xhr))
+		.then(xhr => form.load(parseInt(xhr.response.id)))
 		.finally(() => {
-			form.hideOverlay();
+			form.fire('hide-overlay');
 			form.reloadList();
 		})
 		;

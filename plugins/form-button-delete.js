@@ -1,6 +1,7 @@
 import FormButtonPlugin from "../plugin/types/FormButtonPlugin";
 import Modal            from "z-ui/modal/modal";
 import Ajax             from "zengular/core/ajax";
+import AjaxErrorHandler from "../admin/ajax-error-handler";
 
 @FormButtonPlugin.register()
 export default class FormButtonDelete extends FormButtonPlugin {
@@ -15,18 +16,13 @@ export default class FormButtonDelete extends FormButtonPlugin {
 		modal.title = "DELETE ITEM";
 		modal.body = `<i class="${form.icon}"></i> <b>${form.label}</b><br>Do you really want to delete this iteme?`;
 		modal.addButton('Delete', () => {
-			form.showOverlay();
+			form.fire('show-overlay');
 			modal.close();
 			Ajax.get('/' + form.urlBase + '/delete-item/' + form.id).get
-			.then((result) => {
-				if (result.status !== 200) {
-					form.handlerError(result);
-				} else {
-					form.tab.close();
-				}
-			})
+			.then(xhr => AjaxErrorHandler.handle())
+			.then((xhr) => form.tab.close())
 			.finally(() => {
-				form.hideOverlay();
+				form.fire('hide-overlay');
 				form.reloadList();
 			})
 			;

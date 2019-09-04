@@ -8,6 +8,6 @@ export default class FormButtonFiles extends FormButtonPlugin {
 	get icon() { return 'fa fa-folder';}
 	get color() { return null;}
 	createButton() { return this.form.id ? super.createButton() : false; }
-	action(event) { CodexAdminAttachmentModal.createModal().then(modal => modal.show({form: this.form}));}
+	action(event) { CodexAdminAttachmentModal.createModal(this.form.root).then(modal => modal.show({form: this.form}));}
 
 }

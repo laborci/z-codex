@@ -91,7 +91,7 @@ export default class CodexAdminList extends Brick {
 		if (this.loading) return;
 
 		this.loading = true;
-		this.showOverlay();
+		this.fire('show-overlay');
 
 		Ajax.json('/' + this.urlBase + '/get-list/' + page, {sort: this.sort.field ? this.sort : null}).getJson
 		.then(request => {
@@ -120,7 +120,7 @@ export default class CodexAdminList extends Brick {
 			this.loading = false;
 		})
 		.finally(() => {
-			this.hideOverlay();
+			this.fire('hide-overlay');
 		});
 	}
 
@@ -145,8 +145,5 @@ export default class CodexAdminList extends Brick {
 
 	reload(urlBase = null) { if (urlBase === null || this.urlBase === urlBase) this.load();}
 	addNew() { this.fire('ADD-NEW-ITEM');}
-	showOverlay() { this.$$('overlay').node.classList.add('visible');}
-	hideOverlay() { this.$$('overlay').node.classList.remove('visible');}
-
 }
 

@@ -11,8 +11,8 @@ import CodexAdminForm from "../form/brick";
 export default class CodexAdminTabManager extends Brick {
 
 	onInitialize() {
-		this.listen('TAB-SELECTED', event => { this.selectTab(event.source);});
-		this.listen('TAB-CLOSED', event => { this.removeTab(event.source);});
+		this.listen('TAB-SELECTED', event => { console.log(event); this.selectTab(event.source.controller);});
+		this.listen('TAB-CLOSED', event => {this.removeTab(event.source);});
 	}
 
 	open(urlBase, id) {
@@ -31,14 +31,15 @@ export default class CodexAdminTabManager extends Brick {
 			.then((form)=>{
 				tab.form = form;
 				form.tab = tab;
-				form.load(id, urlBase);
 				this.$$('forms').node.appendChild(form.root);
+				form.load(id, urlBase);
 				this.selectTab(tab);
 			});
 		}else this.selectTab(tab);
 	}
 
 	selectTab(tab) {
+		console.log(tab)
 		this.$(CodexAdminTab.selector).filter('[data-selected=yes]', tab => tab.dataset.selected = 'no');
 		tab.root.dataset.selected = 'yes';
 		this.$(CodexAdminForm.selector).filter('.visible', element => element.classList.remove('visible'));
@@ -46,15 +47,16 @@ export default class CodexAdminTabManager extends Brick {
 	}
 
 	removeTab(tab) {
-		if (tab.root.dataset.selected === 'yes') {
-			if (tab.root.nextElementSibling !== null) {
-				this.selectTab(tab.root.nextElementSibling.controller);
-			} else if (tab.root.previousElementSibling !== null) {
-				this.selectTab(tab.root.previousElementSibling.controller);
+		console.log(tab)
+		if (tab.dataset.selected === 'yes') {
+			if (tab.nextElementSibling !== null) {
+				this.selectTab(tab.nextElementSibling.controller);
+			} else if (tab.previousElementSibling !== null) {
+				this.selectTab(tab.previousElementSibling.controller);
 			}
 		}
-		tab.form.root.remove();
-		tab.root.remove();
+		tab.controller.form.root.remove();
+		tab.remove();
 	}
 
 }

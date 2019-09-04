@@ -8,9 +8,6 @@ import "./style.less";
 export default class CodexAdminTab extends Brick {
 
 	onInitialize() {
-		this.$().listen('click', event => {
-			if (this.dataset.selected !== 'yes') this.fire('TAB-SELECTED');
-		});
 		this.root.classList.add('closed');
 	}
 
@@ -25,12 +22,17 @@ export default class CodexAdminTab extends Brick {
 	onAttributeChange() {this.render();}
 
 	onRender() {
+		window.requestAnimationFrame(() => this.root.classList.remove('closed'));
 		this.root.setAttribute('title', this.dataset.label);
+
 		this.$$('close').listen('click', event => {
 			this.close();
 			event.stopPropagation();
 		});
-		window.requestAnimationFrame(() => this.root.classList.remove('closed'));
+
+		this.$().listen('click', event => {
+			if (this.dataset.selected !== 'yes') this.fire('TAB-SELECTED');
+		});
 	}
 
 	close() {

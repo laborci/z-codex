@@ -54,7 +54,6 @@ export default class CodexAdminFrame extends Brick {
 		this.$$('header-icon').each(e => e.classList.add(...this.codexinfo.header.icon.split(' ')));
 		this.$$('header-title').each(e => e.innerHTML = this.codexinfo.header.title);
 		this.$$('buttons').node.innerHTML = '';
-		console.log(this.codexinfo)
 		let plugins = pluginManager.get(this.codexinfo.list.plugins, ListButtonPlugin, this.list);
 		plugins.forEach(plugin => {
 			let button = plugin.createButton();

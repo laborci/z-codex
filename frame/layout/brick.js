@@ -8,6 +8,8 @@ import CodexLayoutContentBrick from "../content/brick";
 @Brick.registerSubBricksOnRender()
 export default class CodexLayoutBrick extends Brick{
 
+	onInitialize() {
+	}
 
 	createViewModel() {
 		return {
@@ -22,5 +24,10 @@ export default class CodexLayoutBrick extends Brick{
 		this.menu = this.$(CodexLayoutMenuBrick.selector).node.controller;
 		this.content = this.$(CodexLayoutContentBrick.selector).node.controller;
 		this.fire('layout-rendered', {layout: this});
+		this.listen('hide-overlay', ()=>this.hideOverlay());
+		this.listen('show-overlay', ()=>this.showOverlay());
 	}
+
+	showOverlay() { this.$$('overlay').node.classList.add('visible');}
+	hideOverlay() { this.$$('overlay').node.classList.remove('visible');}
 }

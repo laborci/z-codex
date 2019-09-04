@@ -4,11 +4,11 @@
 			<div (category) class="attachmentHolder" data-category="{{ category }}">
 				<header>{{ label }}</header>
 				{% for attachment in loop.parent.attachments[category] %}
-					<div (attachment) draggable="true" data-url="{{ attachment.url }}" data-category="{{ attachment.category }}" data-filename="{{ attachment.filename }}">
-						{% if attachment['mime-base'] == 'image' %}
+					<div (attachment) draggable="true" data-url="{{ attachment.url }}" data-category="{{ attachment.category }}" data-filename="{{ attachment.file }}">
+						{% if attachment.thumbnail %}
 							<img draggable="false" src="{{ attachment.thumbnail }}">
 						{% else %}
-							<div class="icon"><i class="fal fa-file"></i> {{ attachment.extension }}</div>
+							<div class="icon"><i class="fal {{ loop.parent.getClassNameForExtension(attachment.extension) }}"></i> {{ attachment.extension }}</div>
 						{% endif %}
 						<input title="{{ attachment.file }}" value="{{ attachment.file }}" readonly>
 					</div>

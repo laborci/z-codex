@@ -14,7 +14,6 @@ export default class  AdminApplication extends Application{
 
 	initialize(){
 		this.listen('layout-rendered', (event)=>{
-			console.log(event);
 			this.layout = event.data.layout;
 			this.run();
 		});

@@ -1,11 +1,12 @@
-import Brick            from "zengular/core/brick";
-import twig             from "./template.twig";
+import Brick                      from "zengular/core/brick";
+import twig                       from "./template.twig";
 import "./style.less";
-import Ajax             from "zengular/core/ajax";
-import pluginManager    from "../../plugin/plugin-manager";
-import FormButtonPlugin from "../../plugin/types/FormButtonPlugin";
-import Modal            from "z-ui/modal/modal";
-import ModalBrick       from "z-ui/modal/modal-brick";
+import Ajax                       from "zengular/core/ajax";
+import Modal                      from "z-ui/modal/modal";
+import ModalBrick                 from "z-ui/modal/modal-brick";
+import {getClassNameForExtension} from "font-awesome-filetypes";
+import Contextmenu                from "z-ui/contextmenu/contextmenu";
+import AjaxErrorHandler           from "../ajax-error-handler";
 
 @Brick.register('codex-admin-attachment-modal', twig)
 @Brick.registerSubBricksOnRender()
@@ -20,17 +21,30 @@ export default class CodexAdminAttachmentModal extends ModalBrick {
 		modal.classList.add('frameless');
 	}
 
-	beforeRender(args) {
-		this.form = args.form;
-	}
+	beforeRender(args) { if (args) this.form = args.form;}
 
 	onInitialize() {
+		this.menu = new Contextmenu();
+		this.menu.add('Download', 'fas fa-cloud-download-alt').click(ctx => {
+			this.openAttachment(ctx.dataset.url);
+		});
+//		this.menu.add('Rename', 'fas fa-edit').click(ctx => {
+//			let category = ctx.dataset.category;
+//			let filename = ctx.dataset.filename;
+//			this.renameAttachment(filename, category);
+//		});
+		this.menu.add('Delete', 'fal fa-trash-alt').click(ctx => {
+			let category = ctx.dataset.category;
+			let filename = ctx.dataset.filename;
+			this.deleteAttachment(filename, category);
+		});
 	}
 
 	createViewModel() {
-		return Ajax.get(this.form.urlBase + '/attachment/get/'+this.form.data.id).getJson
-		.then(attachments=>{
+		return Ajax.get(this.form.urlBase + '/attachment/get/' + this.form.data.id).getJson
+		.then(attachments => {
 			return {
+				getClassNameForExtension: getClassNameForExtension,
 				attachmentCategories: this.form.attachmentCategories,
 				attachments: attachments.response
 			}
@@ -40,16 +54,19 @@ export default class CodexAdminAttachmentModal extends ModalBrick {
 	onRender() {
 
 		this.$$('attachment')
+		.listen('contextmenu', (event, target) => {
+			event.preventDefault();
+			this.menu.show(event, target);
+		})
 		.listen('dragstart', (event, target) => {
-//			event.dataTransfer.setData('filename', target.dataset.filename);
-//			event.dataTransfer.setData('group', target.dataset.group);
-//			event.dataTransfer.setData('action', "copy");
+			event.dataTransfer.setData('filename', target.dataset.filename);
+			event.dataTransfer.setData('category', target.dataset.category);
+			event.dataTransfer.setData('action', "copy");
 		})
 		.listen('dblclick', (event, target) => {
-//			if (event.target === target) {
-//				let win = window.open(target.dataset.url, '_blank');
-//				win.focus();
-//			}
+			if (target.dataset.url) {
+				this.openAttachment(target.dataset.url)
+			}
 		});
 
 		this.$$("category", node => node.overCounter = 0)
@@ -71,61 +88,64 @@ export default class CodexAdminAttachmentModal extends ModalBrick {
 			event.stopImmediatePropagation();
 			target.classList.remove('dragover');
 			target.overCounter = 0;
-
 			if (event.dataTransfer.getData('action') === 'copy') {
 				let method = event.shiftKey ? 'copy' : 'move';
-				let data = {
-					method: method,
-					target: target.dataset.group,
-					filename: event.dataTransfer.getData('filename'),
-					source: event.dataTransfer.getData('group')
-				};
-				if (data.target !== data.source) {
-//					Ajax.request(this.url + '/' + data.method).postJSON(data).do((response) => {
-//						if (response.json.status === 'ok') {
-//							this.render();
-//						} else {
-//							Modal.alert(response.json.message, 'Some error occured');
-//						}
-//					});
-				}
+				let target = target.dataset.category;
+				let filename = event.dataTransfer.getData('filename');
+				let source = event.dataTransfer.getData('category');
+				if (target !== source) this.copyAttachment(method, filename, source, target);
 			} else {
-				for (let i = 0; i < event.dataTransfer.files.length; i++) {
-					let file = event.dataTransfer.files[i];
-					Ajax.upload(this.form.urlBase + '/attachment/upload/'+this.form.data.id, {category: target.dataset.category}, file).getJson
-					.then(()=>{
-						console.log('done');
-					})
-//					Ajax.request(this.url).upload({group: target.dataset.group}, file).do((response) => {
-//						if (response.json.status == 'ok') {
-//							this.render();
-//						} else {
-//							Modal.alert(response.json.message, 'Upload error');
-//						}
-//					});
-				}
-			}
+				let files = event.dataTransfer.files;
+				let category = target.dataset.category;
+				this.uploadAttachment(files, category);
 
-			console.log(target.dataset.category)
+			}
 		});
 	}
 
-	handlerError(xhr, cb = null) {
-		let message = `Some unknown error occured: ${xhr.statusText} (${xhr.status})`;
-		if (typeof xhr.json?.message === "string") message = xhr.json.message;
-		let modal = new Modal();
-		modal.title = "ERROR";
-		modal.body = message;
-		modal.addButton('Ok', false, 'danger');
-		modal.onClose = cb;
-		modal.show();
+
+
+	openAttachment(url) {
+		let win = window.open(url, '_blank');
+		win.focus();
 	}
 
-	collectFieldData() {
+	uploadAttachment(files, category) {
+		this.fire('show-overlay');
+		let uploads = [];
+		for (let i = 0; i < files.length; i++) {
+			let file = files[i];
+			let upload = Ajax.upload(this.form.urlBase + '/attachment/upload/' + this.form.data.id, {category: category}, file).getJson
+			.then(xhr => AjaxErrorHandler.handle());
+			uploads.push(upload);
+		}
 
+		Promise.all(uploads).finally(() => {
+			this.render()
+			.then(() => this.fire('hide-overlay'));
+		})
 	}
 
-	showOverlay() { this.$$('overlay').node.classList.add('visible');}
-	hideOverlay() { this.$$('overlay').node.classList.remove('visible');}
+	copyAttachment(method, filename, source, target) {
+		this.fire('show-overlay');
+		Ajax.json(`${this.form.urlBase}/attachment/${method}/${this.form.data.id}`, {target, source, filename}).getJson
+		.then(xhr => AjaxErrorHandler.handle())
+		.finally(() => {
+			this.render();
+			this.fire('hide-overlay')
+		});
+	}
+
+	deleteAttachment(filename, category) {
+		this.fire('show-overlay');
+		Ajax.json(`${this.form.urlBase}/attachment/delete/${this.form.data.id}`, {filename, category}).getJson
+		.then(xhr => AjaxErrorHandler.handle())
+		.finally(() => {
+			this.render();
+			this.fire('hide-overlay')
+		});
+	}
+
+	renameAttachment(filename, category) {}
+
 }
-
