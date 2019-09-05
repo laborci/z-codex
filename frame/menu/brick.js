@@ -25,7 +25,7 @@ export default class CodexLayoutMenuBrick extends Brick {
 			}
 		});
 
-		this.listen('.logout', 'click', event => {
+		this.$$('logout').listen('click', event => {
 			Ajax.post('/logout').get.then(() => document.location.reload());
 		});
 	}
