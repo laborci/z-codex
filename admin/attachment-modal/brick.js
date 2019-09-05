@@ -90,10 +90,10 @@ export default class CodexAdminAttachmentModal extends ModalBrick {
 			target.overCounter = 0;
 			if (event.dataTransfer.getData('action') === 'copy') {
 				let method = event.shiftKey ? 'copy' : 'move';
-				let target = target.dataset.category;
+				let fileTarget = target.dataset.category;
 				let filename = event.dataTransfer.getData('filename');
 				let source = event.dataTransfer.getData('category');
-				if (target !== source) this.copyAttachment(method, filename, source, target);
+				if (target !== source) this.copyAttachment(method, filename, source, fileTarget);
 			} else {
 				let files = event.dataTransfer.files;
 				let category = target.dataset.category;
