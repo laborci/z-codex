@@ -11,7 +11,7 @@ import CodexAdminForm from "../form/brick";
 export default class CodexAdminTabManager extends Brick {
 
 	onInitialize() {
-		this.listen('TAB-SELECTED', event => { console.log(event); this.selectTab(event.source.controller);});
+		this.listen('TAB-SELECTED', event => { this.selectTab(event.source.controller);});
 		this.listen('TAB-CLOSED', event => {this.removeTab(event.source);});
 	}
 
@@ -39,7 +39,6 @@ export default class CodexAdminTabManager extends Brick {
 	}
 
 	selectTab(tab) {
-		console.log(tab)
 		this.$(CodexAdminTab.selector).filter('[data-selected=yes]', tab => tab.dataset.selected = 'no');
 		tab.root.dataset.selected = 'yes';
 		this.$(CodexAdminForm.selector).filter('.visible', element => element.classList.remove('visible'));
@@ -47,7 +46,6 @@ export default class CodexAdminTabManager extends Brick {
 	}
 
 	removeTab(tab) {
-		console.log(tab)
 		if (tab.dataset.selected === 'yes') {
 			if (tab.nextElementSibling !== null) {
 				this.selectTab(tab.nextElementSibling.controller);

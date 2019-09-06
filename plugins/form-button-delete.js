@@ -19,7 +19,7 @@ export default class FormButtonDelete extends FormButtonPlugin {
 			form.fire('show-overlay');
 			modal.close();
 			Ajax.get('/' + form.urlBase + '/delete-item/' + form.id).get
-			.then(xhr => AjaxErrorHandler.handle())
+			.then(xhr => AjaxErrorHandler.handle(xhr))
 			.then((xhr) => form.tab.close())
 			.finally(() => {
 				form.fire('hide-overlay');

@@ -64,7 +64,7 @@ export default class CodexAdminAttachmentModal extends ModalBrick {
 			event.dataTransfer.setData('action', "copy");
 		})
 		.listen('dblclick', (event, target) => {
-			if (target.dataset.url) {
+			if (target.dataset.url && event.target.tagName !== 'INPUT') {
 				this.openAttachment(target.dataset.url)
 			}
 		});
@@ -92,13 +92,12 @@ export default class CodexAdminAttachmentModal extends ModalBrick {
 				let method = event.shiftKey ? 'copy' : 'move';
 				let fileTarget = target.dataset.category;
 				let filename = event.dataTransfer.getData('filename');
-				let source = event.dataTransfer.getData('category');
-				if (target !== source) this.copyAttachment(method, filename, source, fileTarget);
+				let fileSource = event.dataTransfer.getData('category');
+				if (fileTarget !== fileSource) this.copyAttachment(method, filename, fileSource, fileTarget);
 			} else {
 				let files = event.dataTransfer.files;
 				let category = target.dataset.category;
 				this.uploadAttachment(files, category);
-
 			}
 		});
 	}
@@ -116,7 +115,7 @@ export default class CodexAdminAttachmentModal extends ModalBrick {
 		for (let i = 0; i < files.length; i++) {
 			let file = files[i];
 			let upload = Ajax.upload(this.form.urlBase + '/attachment/upload/' + this.form.data.id, {category: category}, file).getJson
-			.then(xhr => AjaxErrorHandler.handle());
+			.then(xhr => AjaxErrorHandler.handle(xhr));
 			uploads.push(upload);
 		}
 
@@ -129,7 +128,7 @@ export default class CodexAdminAttachmentModal extends ModalBrick {
 	copyAttachment(method, filename, source, target) {
 		this.fire('show-overlay');
 		Ajax.json(`${this.form.urlBase}/attachment/${method}/${this.form.data.id}`, {target, source, filename}).getJson
-		.then(xhr => AjaxErrorHandler.handle())
+		.then(xhr => AjaxErrorHandler.handle(xhr))
 		.finally(() => {
 			this.render();
 			this.fire('hide-overlay')
@@ -139,7 +138,7 @@ export default class CodexAdminAttachmentModal extends ModalBrick {
 	deleteAttachment(filename, category) {
 		this.fire('show-overlay');
 		Ajax.json(`${this.form.urlBase}/attachment/delete/${this.form.data.id}`, {filename, category}).getJson
-		.then(xhr => AjaxErrorHandler.handle())
+		.then(xhr => AjaxErrorHandler.handle(xhr))
 		.finally(() => {
 			this.render();
 			this.fire('hide-overlay')

@@ -1,9 +1,10 @@
-import Application      from "zengular/core/application";
-import CodexFormFrame   from "./admin/frame/brick";
+import Application    from "zengular/core/application";
+import CodexFormFrame from "./admin/frame/brick";
 
 import "./frame/layout/brick";
 import "./admin/loader";
 import "./plugins/loader";
+import Ajax           from "zengular/core/ajax";
 
 
 export default class  AdminApplication extends Application{
@@ -17,6 +18,8 @@ export default class  AdminApplication extends Application{
 			this.layout = event.data.layout;
 			this.run();
 		});
+		return Ajax.get('/menu').getJson
+		.then((xhr)=>this.menu = xhr.response);
 	}
 
 	run(){
@@ -33,6 +36,7 @@ export default class  AdminApplication extends Application{
 	}
 
 	menuEventHandler(event) {
+		console.log(event.data)
 		this.layout.content.show(CodexFormFrame, event.data);
 	}
 

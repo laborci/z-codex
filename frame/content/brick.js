@@ -11,7 +11,7 @@ export default class CodexLayoutContentBrick extends Brick {
 	}
 
 	show(typeofBrick, data) {
-		if (this.brick !== typeofBrick) {
+		if (this.typeofBrick !== typeofBrick) {
 			this.typeofBrick = typeofBrick;
 			this.clearContent();
 			typeofBrick.create()
