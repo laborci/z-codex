@@ -36,7 +36,6 @@ export default class  AdminApplication extends Application{
 	}
 
 	menuEventHandler(event) {
-		console.log(event.data)
 		this.layout.content.show(CodexFormFrame, event.data);
 	}
 
