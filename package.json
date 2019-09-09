@@ -1,7 +1,7 @@
 {
-  "name": "z-codex",
-  "author": {
-    "name": "Gergely Laborci"
-  },
+  "name": "zengular-codex",
+  "author": "Gergely Laborci",
+  "version": "1.0.1",
+  "license": "MIT",
   "dependencies": {}
 }

@@ -2,10 +2,10 @@ import Brick                      from "zengular/core/brick";
 import twig                       from "./template.twig";
 import "./style.less";
 import Ajax                       from "zengular/core/ajax";
-import Modal                      from "z-ui/modal/modal";
-import ModalBrick                 from "z-ui/modal/modal-brick";
+import Modal                      from "zengular-ui/modal/modal";
+import ModalBrick                 from "zengular-ui/modal/modal-brick";
 import {getClassNameForExtension} from "font-awesome-filetypes";
-import Contextmenu                from "z-ui/contextmenu/contextmenu";
+import Contextmenu                from "zengular-ui/contextmenu/contextmenu";
 import AjaxErrorHandler           from "../ajax-error-handler";
 
 @Brick.register('codex-admin-attachment-modal', twig)

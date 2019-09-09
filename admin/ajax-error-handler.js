@@ -1,4 +1,4 @@
-import Modal from "z-ui/modal/modal";
+import Modal from "zengular-ui/modal/modal";
 
 export default class AjaxErrorHandler {
 	static handle(xhr, callback = null) {

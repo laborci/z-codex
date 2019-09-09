@@ -46,12 +46,12 @@ export default class Todo extends Brick {
 			};
 			return Ajax.post('/login',data).getJson;
 		})
-		.then(response => {
+		.then(xhr => {
 			this.$('footer.working').node.classList.remove('visible');
-			return this.sleep(animtime).then(resolve => response)
+			return this.sleep(animtime).then(resolve => xhr)
 		})
-		.then(response => {
-			if (response.status === 200) {
+		.then(xhr => {
+			if (xhr.status === 200) {
 				this.$('footer.success').node.classList.add('visible');
 				return this.sleep(animtime).then(() => {
 					document.location.reload();

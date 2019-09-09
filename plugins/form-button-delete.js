@@ -1,5 +1,5 @@
 import FormButtonPlugin from "../plugin/types/FormButtonPlugin";
-import Modal            from "z-ui/modal/modal";
+import Modal            from "zengular-ui/modal/modal";
 import Ajax             from "zengular/core/ajax";
 import AjaxErrorHandler from "../admin/ajax-error-handler";
 
